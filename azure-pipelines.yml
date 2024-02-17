@@ -43,7 +43,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        APIKEY=$(az staticwebapp secrets list --name $(staticWebAppName) | jq -r '.properties.apiKey')
+        APIKEY=$(az staticwebapp secrets list --name $(appName) | jq -r '.properties.apiKey')
         echo "##vso[task.setvariable variable=apiKey;issecret=true]$APIKEY"
 
   - task: AzureStaticWebApp@0
