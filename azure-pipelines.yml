@@ -1,0 +1,69 @@
+trigger:
+  branches:
+    include:
+      - main
+      - preview
+
+pool:
+  vmImage: LocalMachine
+
+variables:
+  # subscriptionId is a variable defined on the pipeline itself
+  - name: appName
+    value: 'TeknoFire'
+  - name: location
+    value: 'westeurope'
+  - name: serviceConnection
+    value: 'ARM-Service-Connection-for-TeknoFire'
+  - name: azureResourceGroup
+    value: 'TeknoFire'
+  - name: 'templateFile'
+    value: './bicep/main.bicep'
+  - name: isMain
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')] # runtime expression
+
+steps:
+  - checkout: self
+    submodules: true
+
+  - task: AzureCLI@2
+    inputs:
+     azureSubscription: $(azureServiceConnection)
+     scriptType: bash
+     scriptLocation: inlineScript
+     useGlobalConfig: false
+     inlineScript: |
+      az --version
+      az group create --name $(azureResourceGroup) --location $(location)
+      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile)
+
+  - task: AzureCLI@2
+    displayName: 'Acquire API key for deployment'
+    inputs:
+      azureSubscription: $(serviceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        APIKEY=$(az staticwebapp secrets list --name $(staticWebAppName) | jq -r '.properties.apiKey')
+        echo "##vso[task.setvariable variable=apiKey;issecret=true]$APIKEY"
+
+  - task: AzureStaticWebApp@0
+    name: DeployStaticWebApp
+    displayName: Deploy Static Web App
+    condition: and(succeeded(), eq(variables.isMain, 'true'))
+    inputs:
+      app_location: '/Static-HTML-Website-main'
+      # api_location: 'api'
+      output_location: 'build'
+      azure_static_web_apps_api_token: $(apiKey)
+
+  - task: AzureStaticWebApp@0
+    name: DeployStaticWebAppPreview
+    displayName: Deploy Static Web App to named preview environment
+    condition: and(succeeded(), ne(variables.isMain, 'true'))
+    inputs:
+      app_location: '/Static-HTML-Website-main'
+      # api_location: 'api'
+      output_location: 'build'
+      azure_static_web_apps_api_token: $(apiKey)
+      deployment_environment: 'preview'
