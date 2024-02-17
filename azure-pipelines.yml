@@ -4,8 +4,7 @@ trigger:
       - main
       - preview
 
-pool:
-  vmImage: LocalMachine
+pool: LocalMachine
 
 variables:
   # subscriptionId is a variable defined on the pipeline itself
