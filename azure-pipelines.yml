@@ -4,13 +4,12 @@ trigger:
       - main
       - preview
 
-pool:
-  vmImage: LocalMachine
+pool: LocalMachine
 
 variables:
   # subscriptionId is a variable defined on the pipeline itself
   - name: appName
-    value: 'TeknoFire'
+    value: 'TeknoFireSite'
   - name: location
     value: 'westeurope'
   - name: serviceConnection
@@ -28,14 +27,14 @@ steps:
 
   - task: AzureCLI@2
     inputs:
-     azureSubscription: $(azureServiceConnection)
+     azureSubscription: $(serviceConnection)
      scriptType: bash
      scriptLocation: inlineScript
      useGlobalConfig: false
      inlineScript: |
       az --version
       az group create --name $(azureResourceGroup) --location $(location)
-      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile)
+      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile) --parameters repositoryUrl=$(Build.Repository.Uri) repositoryBranch=$(Build.SourceBranchName) appName=$(appName)
 
   - task: AzureCLI@2
     displayName: 'Acquire API key for deployment'
@@ -44,7 +43,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        APIKEY=$(az staticwebapp secrets list --name $(staticWebAppName) | jq -r '.properties.apiKey')
+        APIKEY=$(az staticwebapp secrets list --name $(appName) | jq -r '.properties.apiKey')
         echo "##vso[task.setvariable variable=apiKey;issecret=true]$APIKEY"
 
   - task: AzureStaticWebApp@0
