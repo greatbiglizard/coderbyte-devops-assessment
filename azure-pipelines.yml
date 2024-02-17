@@ -10,7 +10,7 @@ pool:
 variables:
   # subscriptionId is a variable defined on the pipeline itself
   - name: appName
-    value: 'TeknoFire'
+    value: 'TeknoFireSite'
   - name: location
     value: 'westeurope'
   - name: serviceConnection
