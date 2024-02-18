@@ -13,9 +13,6 @@ param customDomain string
 @description('Which branch of the Azure Devops Git Repo to use')
 param zoneName string
 
-@description('Which branch of the Azure Devops Git Repo to use')
-param siteName string
-
 module staticwebapp 'modules/staticwebapp.bicep' = {
   name: 'staticwebapp'
   params: {
@@ -30,9 +27,6 @@ module dnszone 'modules/dnszone.bicep' = {
   name: 'dnszone'
   params: {
     zoneName: zoneName
-    siteName: siteName
-    staticWebAppDefaultHostName: staticwebapp.outputs.staticWebAppDefaultHostName
-
  }
 }
 

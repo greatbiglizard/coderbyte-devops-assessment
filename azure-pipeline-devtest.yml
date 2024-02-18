@@ -13,11 +13,9 @@ variables:
   - name: location
     value: 'westeurope'
   - name: customDomain
-    value: 'teknofire.noidenterprisesdevtest.com'
+    value: 'noidenterprisesdevtest.com'
   - name: zoneName
     value: 'noidenterprisesdevtest.com'
-  - name: siteName
-    value: 'teknofire'
   - name: serviceConnection
     value: 'ARM-Service-Connection-for-TeknoFire'
   - name: azureResourceGroup
