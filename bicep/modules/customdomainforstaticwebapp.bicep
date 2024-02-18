@@ -12,5 +12,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2021-03-01' existing = {
 resource staticWebApp_customDomain 'Microsoft.Web/staticSites/customDomains@2023-01-01' = {
   parent: staticWebApp
   name: customDomain
-  properties: {}
+  properties: {
+    validationMethod: 'TXT'
+  }
 }
