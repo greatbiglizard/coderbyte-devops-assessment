@@ -1,30 +1,48 @@
+@description('Name of the Static Web App')
 param appName string
+
+@description('URL of the Azure Devops Git Repo')
 param repositoryUrl string
+
+@description('Which branch of the Azure Devops Git Repo to use')
 param repositoryBranch string
 
-param location string = resourceGroup().location
-param skuName string = 'Free'
-param skuTier string = 'Free'
+@description('Which branch of the Azure Devops Git Repo to use')
+param customDomain string
 
-resource staticWebApp 'Microsoft.Web/staticSites@2021-03-01' = {
-  name: appName
-  location: location
-  sku: {
-    name: skuName
-    tier: skuTier
-  }
-  properties: {
-    // The provider, repositoryUrl and branch fields are required for successive deployments to succeed
-    // for more details see: https://github.com/Azure/static-web-apps/issues/516
-    provider: 'DevOps'
+@description('Which branch of the Azure Devops Git Repo to use')
+param zoneName string
+
+@description('Which branch of the Azure Devops Git Repo to use')
+param siteName string
+
+module staticwebapp 'Modules/staticwebapp.bicep' = {
+  name: 'staticwebapp'
+  params: {
+    appName: appName
     repositoryUrl: repositoryUrl
-    branch: repositoryBranch
-    buildProperties: {
-      skipGithubActionWorkflowGeneration: true
-    }
-  }
+    repositoryBranch: repositoryBranch
+    customDomain: customDomain
+ }
 }
 
-output staticWebAppDefaultHostName string = staticWebApp.properties.defaultHostname // eg gentle-bush-0db02ce03.azurestaticapps.net
-output staticWebAppId string = staticWebApp.id
-output staticWebAppName string = staticWebApp.name
+module dnszone 'Modules/dnszone.bicep' = {
+  name: 'dnszone'
+  params: {
+    zoneName: zoneName
+    siteName: siteName
+    staticWebAppDefaultHostName: staticwebapp.outputs.staticWebAppDefaultHostName
+
+ }
+}
+
+module customdomainforstaticwebapp 'Modules/customdomainforstaticwebapp.bicep' = {
+  name: 'customdomainforstaticwebapp'
+  params: {
+    customDomain: customDomain
+    appName: appName
+ }
+}
+
+
+

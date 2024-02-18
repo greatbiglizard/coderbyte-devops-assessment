@@ -7,11 +7,17 @@ trigger:
 pool: LocalMachine
 
 variables:
-  # subscriptionId is a variable defined on the pipeline itself
+
   - name: appName
     value: 'TeknoFireSite-devtest'
   - name: location
     value: 'westeurope'
+  - name: customDomain
+    value: 'teknofire.noidenterprisesdevtest.com'
+  - name: zoneName
+    value: 'noidenterprisesdevtest.com'
+  - name: siteName
+    value: 'teknofire'
   - name: serviceConnection
     value: 'ARM-Service-Connection-for-TeknoFire'
   - name: azureResourceGroup
@@ -19,7 +25,7 @@ variables:
   - name: 'templateFile'
     value: './bicep/main.bicep'
   - name: isMain
-    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/test')] # runtime expression
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/test')]
 
 steps:
   - checkout: self
@@ -66,3 +72,12 @@ steps:
       output_location: 'build'
       azure_static_web_apps_api_token: $(apiKey)
       deployment_environment: 'dev'
+
+  - task: PowerShell@2
+    displayName: "Run Pester tests"
+    inputs:
+      targetType: "inline"
+      script: |
+        $tests = (Get-ChildItem -Path ./tests -Recurse | Where-Object {$_.Name -like "*Tests.ps1"}).FullName
+        Invoke-Pester $tests
+      ignoreLASTEXITCODE: true
