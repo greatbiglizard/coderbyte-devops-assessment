@@ -40,7 +40,7 @@ steps:
      inlineScript: |
       az --version
       az group create --name $(azureResourceGroup) --location $(location)
-      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile) --parameters repositoryUrl=$(Build.Repository.Uri) repositoryBranch=$(Build.SourceBranchName) appName=$(appName)
+      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile) --parameters repositoryUrl=$(Build.Repository.Uri) repositoryBranch=$(Build.SourceBranchName) appName=$(appName) customDomain=$(customDomain) zoneName=$(zoneName) siteName=$(siteName)
 
   - task: AzureCLI@2
     displayName: 'Acquire API key for deployment'
