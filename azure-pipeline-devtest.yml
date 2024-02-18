@@ -7,11 +7,15 @@ trigger:
 pool: LocalMachine
 
 variables:
-  # subscriptionId is a variable defined on the pipeline itself
+
   - name: appName
     value: 'TeknoFireSite-devtest'
   - name: location
     value: 'westeurope'
+  - name: customDomain
+    value: 'noidenterprisesdevtest.com'
+  - name: zoneName
+    value: 'noidenterprisesdevtest.com'
   - name: serviceConnection
     value: 'ARM-Service-Connection-for-TeknoFire'
   - name: azureResourceGroup
@@ -19,7 +23,7 @@ variables:
   - name: 'templateFile'
     value: './bicep/main.bicep'
   - name: isMain
-    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/test')] # runtime expression
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/test')]
 
 steps:
   - checkout: self
@@ -34,7 +38,7 @@ steps:
      inlineScript: |
       az --version
       az group create --name $(azureResourceGroup) --location $(location)
-      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile) --parameters repositoryUrl=$(Build.Repository.Uri) repositoryBranch=$(Build.SourceBranchName) appName=$(appName)
+      az deployment group create --resource-group $(azureResourceGroup) --template-file $(templateFile) --parameters repositoryUrl=$(Build.Repository.Uri) repositoryBranch=$(Build.SourceBranchName) appName=$(appName) customDomain=$(customDomain) zoneName=$(zoneName)
 
   - task: AzureCLI@2
     displayName: 'Acquire API key for deployment'
@@ -66,3 +70,12 @@ steps:
       output_location: 'build'
       azure_static_web_apps_api_token: $(apiKey)
       deployment_environment: 'dev'
+
+  - task: PowerShell@2
+    displayName: "Run Pester tests"
+    inputs:
+      targetType: "inline"
+      script: |
+        $tests = (Get-ChildItem -Path ./tests -Recurse | Where-Object {$_.Name -like "*Tests.ps1"}).FullName
+        Invoke-Pester $tests
+      ignoreLASTEXITCODE: true
