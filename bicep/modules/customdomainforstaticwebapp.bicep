@@ -13,6 +13,6 @@ resource staticWebApp_customDomain 'Microsoft.Web/staticSites/customDomains@2023
   parent: staticWebApp
   name: customDomain
   properties: {
-    validationMethod: 'TXT'
+    validationMethod: 'dns-txt-token'
   }
 }
