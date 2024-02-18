@@ -1,20 +1,7 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This project is to demonstrate competence with Azure Devops Pipelines, bicep and pester testing. It deploys a static web app with a custom domain to  dev-test and staging-prod environments  
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+# Notes
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+- This project uses a static web app rather than a static site with storage account and CDN to simplify deployment and use the most current infrastructure. - The traffic splitting fuctionality in the Standard tier of Azure Static Web Apps would allow for a canary deployment strategy to be used, alongside the   native preview URL functionality. Static Web Apps have downtimeless deployment by default.
+- The Pester tests are basic but functional. Sadly time contraints have prevented me from adding to them further before the deadline
