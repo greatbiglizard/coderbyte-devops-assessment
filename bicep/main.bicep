@@ -7,10 +7,10 @@ param repositoryUrl string
 @description('Which branch of the Azure Devops Git Repo to use')
 param repositoryBranch string
 
-@description('Which branch of the Azure Devops Git Repo to use')
+@description('Custom domain to apply to the Static Web App')
 param customDomain string
 
-@description('Which branch of the Azure Devops Git Repo to use')
+@description('Name of the Azure DNS Zone to create')
 param zoneName string
 
 module staticwebapp 'modules/staticwebapp.bicep' = {
